@@ -12,20 +12,13 @@ from op import setup
 import signal
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
-
-plt.rcParams.update({
-	'text.latex.preamble': r'\usepackage{lmodern}\usepackage{siunitx}',
-	'text.usetex': True,
-	'font.size': 11,
-	'font.family': 'lmodern',
-	'lines.linewidth': 1
-})
-
-result = zeros((201, 201, dim.n1, dim.n2))
-for i1, omega1 in enumerate(linspace(1e6, 2e6, 201)*2*pi):
-	for i2, omega2 in enumerate(linspace(1e6, 2e6, 201)*2*pi):
-		param.omega1 = param.Delta1 = omega1 + 2e5*2*pi
-		param.omega2 = param.Delta2 = omega2 + 8e5*2*pi
+param.tau1 *= 2
+param.tau2 *= 2
+result = zeros((51, 51, dim.n1, dim.n2))
+for i1, omega1 in enumerate(linspace(1e6, 2e6, 51)*2*pi):
+	for i2, omega2 in enumerate(linspace(1e6, 2e6, 51)*2*pi):
+		param.omega1 = param.Delta1 = omega1
+		param.omega2 = param.Delta2 = omega2
 		H, c_ops, e_ops, psi0, psi1 = setup()
 
 		options={
@@ -39,4 +32,4 @@ for i1, omega1 in enumerate(linspace(1e6, 2e6, 201)*2*pi):
 		output = mesolve(H, psi0, t, c_ops, e_ops, options=options)
 		final = output.final_state
 		result[i1, i2] = final.ptrace((1,2)).diag().reshape((dim.n1, dim.n2))
-	save('main.npy', result)
+	save('main-break-tau.npy', result)

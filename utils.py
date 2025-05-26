@@ -1,4 +1,4 @@
-from numpy import pi, exp, log, arange
+from numpy import exp, log, ceil, arange
 from qutip import qdiags
 from scipy.constants import hbar, k
 
@@ -6,9 +6,11 @@ def expi(x):
 	return exp(1j*x)
 
 def thermal_n(nbar, thres=0.01):
-	return log(thres)/log(1-1/(1+nbar))
+	return int(ceil(log(thres)/log(1-1/(1+nbar))))
 
-def thermal(nbar, n=thermal_n(nbar)):
+def thermal(nbar, n=None):
+	if n is None:
+		n = thermal_n(nbar)
 	return qdiags((1-1/(1+nbar))**arange(n)).unit()
 
 def rev(m):
