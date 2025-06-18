@@ -42,7 +42,7 @@ else:
 	n1_vals = list(data[:, 2])
 	n2_vals = list(data[:, 3])
 
-for i1, kappa in enumerate(linspace(0, 2.5e7, 51)):
+for i1, kappa in enumerate(linspace(0, 1e7, 201)):
 	if i1 < len(kappa_vals):
 		continue
 
@@ -70,7 +70,7 @@ for i1, kappa in enumerate(linspace(0, 2.5e7, 51)):
 		plt.ylim(0, 2)
 		plt.xlabel("Time (ms)")
 		plt.ylabel(r"$\left<n_{1,2}\right>$")
-		plt.title(f'$\\kappa={kappa:.3f}$')
+		plt.title(f'$\\kappa=\\SI{{{kappa:.3f}}}{{s^{{-1}}}}$')
 		plt.savefig(f'{plot_dir}/{i1:03d}.pdf', transparent=True, format='pdf', bbox_inches='tight')
 		plt.close()
 		
@@ -84,6 +84,6 @@ for i1, kappa in enumerate(linspace(0, 2.5e7, 51)):
 
 plt.figure()
 plt.plot(kappa_vals, n2_vals)
-plt.xlabel(r"$\kappa$")
+plt.xlabel(r"$\kappa$ (\si{s^{-1}})")
 plt.ylabel(r"$\left<n_2\right>$")
 plt.savefig(output_plot, transparent=True, format='pdf', bbox_inches='tight')
