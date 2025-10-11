@@ -15,7 +15,7 @@ plt.rcParams.update({
 })
 
 '''
-data = np.loadtxt('output.csv', delimiter=',')
+data = np.loadtxt('omega1-omega2-sweep_1', delimiter=',')
 x = data[:,0].reshape(51,51) / (2*np.pi) / 1e6
 y = data[:,1].reshape(51,51) / (2*np.pi) / 1e6
 z = data[:,2].reshape(51,51)**2

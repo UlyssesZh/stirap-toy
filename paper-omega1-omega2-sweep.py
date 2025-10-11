@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 
-from numpy import linspace, pi, exp, sqrt, sin, cos, loadtxt, array, argmax, arcsinh, log
+from numpy import linspace, pi, exp, sqrt, sin, cos, loadtxt, array, argmax
 import matplotlib.pyplot as plt
 from qutip import mesolve, fidelity, hinton, plot_wigner
-from scipy.special import lambertw
 
 import dim
 import param
@@ -13,9 +12,9 @@ from op import setup
 import signal
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
-plot_dir = 'paper/tau-sigma-sweep'
-output_file = 'paper/tau-sigma-sweep.csv'
-output_plot = 'paper/tau-sigma-sweep.pdf'
+plot_dir = 'paper/omega1-omega2-sweep'
+output_file = 'paper/omega1-omega2-sweep.csv'
+output_plot = 'paper/omega1-omega2-sweep.pdf'
 import os
 if not os.path.exists(plot_dir):
 	os.makedirs(plot_dir)
@@ -27,13 +26,13 @@ else:
 	with open(output_file, 'w') as f:
 		pass
 if len(data) == 0:
-	sigma_vals = []
-	tau_vals = []
+	omega1_vals = []
+	omega2_vals = []
 	n1_vals = []
 	n2_vals = []
 else:
-	sigma_vals = list(data[:, 2])
-	tau_vals = list(data[:, 3])
+	omega1_vals = list(data[:, 2])
+	omega2_vals = list(data[:, 3])
 	n1_vals = list(data[:, 4])
 	n2_vals = list(data[:, 5])
 
@@ -46,15 +45,14 @@ plt.rcParams.update({
 })
 
 count = 0
-for i1, sigma in enumerate(linspace(2e-4, 12e-4, 51)):
-	for i2, tau in enumerate(linspace(2e-4, 12e-4, 51)):
+for i1, omega1 in enumerate(linspace(0, 1.5e6, 151)[1:]*2*pi):
+	for i2, omega2 in enumerate(linspace(0, 1.5e6, 151)[1:]*2*pi):
 		count += 1
 		if count <= len(data):
 			continue
 
-		param.sigma1 = param.sigma2 = sigma
-		param.tau1 = tau
-		param.tau2 = -tau
+		param.omega1 = omega1
+		param.omega2 = omega2
 		H, c_ops, e_ops, psi0, psi1 = setup()
 
 		options={
@@ -77,49 +75,31 @@ for i1, sigma in enumerate(linspace(2e-4, 12e-4, 51)):
 			plt.plot(t*1000, alpha_n2, label="Pulse 2")
 			plt.legend()
 			plt.xlabel("Time (ms)")
-			plt.title(r'$\sigma_1=\sigma_2=\SI{%.3f}{ms},\tau=\SI{%.3f}{ms}$' % (sigma*1000, tau*1000))
+			plt.title(r'$\omega_1/2\pi=\SI{%.3f}{MHz},\omega_2/2\pi=\SI{%.3f}{MHz}$' % (omega1*1e-6/(2*pi), omega2*1e-6/(2*pi)))
 			plt.savefig(f'{plot_dir}/{i1}-{i2}.pdf', transparent=True, format='pdf', bbox_inches='tight')
 			plt.close()
 
-		sigma_vals.append(sigma)
-		tau_vals.append(tau)
+		omega1_vals.append(omega1)
+		omega2_vals.append(omega2)
 		n1_val = output.expect[1][-1]
 		n2_val = output.expect[2][-1]
 		n1_vals.append(n1_val)
 		n2_vals.append(n2_val)
 		with open(output_file, 'a') as f:
-			f.write(f'{i1},{i2},{sigma},{tau},{n1_val},{n2_val}\n')
+			f.write(f'{i1},{i2},{omega1},{omega2},{n1_val},{n2_val}\n')
 
-x = array(sigma_vals).reshape(51,51) *1000
-y = array(tau_vals).reshape(51,51) *1000
-z = array(n2_vals).reshape(51,51)
+x = array(omega1_vals).reshape(150,150) *1e-6/(2*pi)
+y = array(omega2_vals).reshape(150,150) *1e-6/(2*pi)
+z = array(n2_vals).reshape(150,150)
 
 max_i = argmax(z)
 max_x = x.flat[max_i]
 max_y = y.flat[max_i]
-print(r'Max <n2>: %.2f at %.2f ms and %.2f ms' % (z.flat[max_i], max_x, max_y))
+print(r'Max <n2>: %.3f at %.3f MHz and %.3f MHz' % (z.flat[max_i], max_x, max_y))
 
-fig, ax = plt.subplots()
-
-mesh = ax.pcolormesh(x, y, z)
+mesh = plt.pcolormesh(x, y, z)
 plt.colorbar(mesh).set_label(r'$\left<n_2\right>$')
-ax.plot(max_x, max_y, 'ro')
-
-x1, x2 = ax.get_xlim()
-y1, y2 = ax.get_ylim()
-
-Omega0 = param.alpha0 * param.g1 * 2
-n = 5
-sigma = linspace(1e-4, 13e-4, 121)
-theta = pi/2
-tau_lo = (sqrt(log(2) + 2*arcsinh(cos(theta/2))) - sqrt(log(2))) * sigma/2
-tau_hi = sqrt(2*lambertw(cos(theta/2)**2 / (n*sin(theta/2)) * Omega0 * sigma)) * sigma/2
-ax.plot(sigma*1e3, tau_lo*1e3, 'blue')
-ax.plot(sigma*1e3, tau_hi*1e3, 'blue')
-
-ax.set_xlim(x1, x2)
-ax.set_ylim(y1, y2)
-
-ax.set_xlabel(r'$\sigma$ (ms)')
-ax.set_ylabel(r'$\tau$ (ms)')
-fig.savefig(output_plot, transparent=True, format='pdf', bbox_inches='tight')
+#plt.plot(max_x, max_y, 'ro')
+plt.xlabel(r'$\omega_1/2\pi$ (MHz)')
+plt.ylabel(r'$\omega_2/2\pi$ (MHz)')
+plt.savefig(output_plot, transparent=True, format='pdf', bbox_inches='tight')
