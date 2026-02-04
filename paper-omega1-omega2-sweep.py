@@ -97,9 +97,31 @@ max_x = x.flat[max_i]
 max_y = y.flat[max_i]
 print(r'Max <n2>: %.3f at %.3f MHz and %.3f MHz' % (z.flat[max_i], max_x, max_y))
 
-mesh = plt.pcolormesh(x, y, z)
-plt.colorbar(mesh).set_label(r'$\left<n_2\right>$')
+fig, ax = plt.subplots()
+mesh = ax.pcolormesh(x, y, z)
+mesh.set_edgecolor('face') # https://stackoverflow.com/a/27096694
 #plt.plot(max_x, max_y, 'ro')
-plt.xlabel(r'$\omega_1/2\pi$ (MHz)')
-plt.ylabel(r'$\omega_2/2\pi$ (MHz)')
+
+ax.set_aspect('equal')
+ax.set_xlabel(r'$\omega_1/2\pi$ (MHz)')
+ax.set_ylabel(r'$\omega_2/2\pi$ (MHz)')
+
+if os.path.exists('paper/omega1-omega2-sweep-zoomed.csv'):
+	zoomed_data = loadtxt('paper/omega1-omega2-sweep-zoomed.csv', delimiter=',')
+	zoomed_omega1_vals = list(zoomed_data[:, 2])
+	zoomed_omega2_vals = list(zoomed_data[:, 3])
+	zoomed_n1_vals = list(zoomed_data[:, 4])
+	zoomed_n2_vals = list(zoomed_data[:, 5])
+	x = array(zoomed_omega1_vals).reshape(200,200) *1e-6/(2*pi)
+	y = array(zoomed_omega2_vals).reshape(200,200) *1e-6/(2*pi)
+	z = array(zoomed_n2_vals).reshape(200,200)
+
+	in_ax = ax.inset_axes([0.4, 0.1, 0.5, 0.5])
+	in_ax.pcolormesh(x, y, z, cmap=mesh.cmap, norm=mesh.norm).set_edgecolor('face')
+	for spine in in_ax.spines.values():
+		spine.set_edgecolor("red")
+	in_ax.set_aspect('equal')
+	ax.indicate_inset_zoom(in_ax, edgecolor = 'red')
+
+fig.colorbar(mesh, ax=ax).set_label(r'$\left<n_2\right>$')
 plt.savefig(output_plot, transparent=True, format='pdf', bbox_inches='tight')

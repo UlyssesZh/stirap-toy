@@ -27,6 +27,7 @@ print('Max fidelity: %.2f at %.2f MHz and %.2f MHz' % (z.flat[max_i], max_x, max
 
 mesh = plt.pcolormesh(x, y, z)
 plt.colorbar(mesh).set_label('Fidelity')
+mesh.set_edgecolor('face') # https://stackoverflow.com/a/27096694
 omega2 = param.omega2 / (2*np.pi) / 1e6
 plt.plot([1.84, 1.92], [omega2, omega2], color='red')
 plt.plot(max_x, max_y, 'ro')
@@ -45,6 +46,7 @@ z2 = np.sum(data * n2, axis=(2,3))
 
 mesh = plt.pcolormesh(x, y, z1)
 plt.colorbar(mesh).set_label(r'$\left<n_1\right>$')
+mesh.set_edgecolor('face') # https://stackoverflow.com/a/27096694
 plt.xlabel('$\omega_1/2\pi$ (MHz)')
 plt.ylabel('$\omega_2/2\pi$ (MHz)')
 plt.gca().set_aspect('equal', adjustable='box')
@@ -52,6 +54,7 @@ plt.show()
 
 mesh = plt.pcolormesh(x, y, z2)
 plt.colorbar(mesh).set_label(r'$\left<n_2\right>$')
+mesh.set_edgecolor('face') # https://stackoverflow.com/a/27096694
 plt.xlabel('$\omega_1/2\pi$ (MHz)')
 plt.ylabel('$\omega_2/2\pi$ (MHz)')
 plt.gca().set_aspect('equal', adjustable='box')

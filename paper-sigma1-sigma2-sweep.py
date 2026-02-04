@@ -99,6 +99,7 @@ print(r'Max <n2>: %.2f at %.2f ms and %.2f ms' % (z.flat[max_i], max_x, max_y))
 
 mesh = plt.pcolormesh(x, y, z)
 plt.colorbar(mesh).set_label(r'$\left<n_2\right>$')
+mesh.set_edgecolor('face') # https://stackoverflow.com/a/27096694
 plt.plot(max_x, max_y, 'ro')
 plt.xlabel(r'$\sigma_1$ (ms)')
 plt.ylabel(r'$\sigma_2$ (ms)')

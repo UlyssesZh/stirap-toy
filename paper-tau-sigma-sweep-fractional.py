@@ -13,9 +13,9 @@ from op import setup
 import signal
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
-plot_dir = 'paper/tau-sigma-sweep'
-output_file = 'paper/tau-sigma-sweep.csv'
-output_plot = 'paper/tau-sigma-sweep.pdf'
+plot_dir = 'paper/tau-sigma-sweep-fractional'
+output_file = 'paper/tau-sigma-sweep-fractional.csv'
+output_plot = 'paper/tau-sigma-sweep-fractional.pdf'
 import os
 if not os.path.exists(plot_dir):
 	os.makedirs(plot_dir)
@@ -45,6 +45,7 @@ plt.rcParams.update({
 	'lines.linewidth': 1
 })
 
+param.theta = pi/4
 count = 0
 for i1, sigma in enumerate(linspace(2e-4, 12e-4, 51)):
 	for i2, tau in enumerate(linspace(2e-4, 12e-4, 51)):
@@ -112,7 +113,7 @@ y1, y2 = ax.get_ylim()
 Omega0 = param.alpha0 * param.g1 * 2
 n = 5
 sigma = linspace(1e-4, 13e-4, 121)
-theta = pi/2
+theta = param.theta
 tau_lo = (sqrt(log(2) + 2*arcsinh(cos(theta/2))) - sqrt(log(2))) * sigma/2
 tau_hi = sqrt(2*lambertw(cos(theta/2)**2 / (n*sin(theta/2)) * Omega0 * sigma)) * sigma/2
 ax.plot(sigma*1e3, tau_lo*1e3, 'blue')

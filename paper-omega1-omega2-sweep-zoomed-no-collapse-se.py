@@ -99,6 +99,7 @@ print(r'Max <n2>: %.3f at %.3f MHz and %.3f MHz' % (z.flat[max_i], max_x, max_y)
 
 mesh = plt.pcolormesh(x, y, z)
 plt.colorbar(mesh).set_label(r'$\left<n_2\right>$')
+mesh.set_edgecolor('face') # https://stackoverflow.com/a/27096694
 #plt.plot(max_x, max_y, 'ro')
 plt.xlabel(r'$\omega_1/2\pi$ (MHz)')
 plt.ylabel(r'$\omega_2/2\pi$ (MHz)')
