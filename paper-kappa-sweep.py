@@ -82,8 +82,12 @@ for i1, kappa in enumerate(linspace(0, 1e7, 201)):
 	with open(output_file, 'a') as f:
 		f.write(f'{i1},{kappa},{n1_val},{n2_val}\n')
 
-plt.figure()
-plt.plot(kappa_vals, n2_vals)
-plt.xlabel(r"$\kappa$ (\si{s^{-1}})")
+kappa_vals = array(kappa_vals)
+plt.figure(figsize=(5,3))
+plt.axvline(0.5, linestyle='--', color='gray')
+plt.plot(kappa_vals/(param.omega2-param.omega1), n2_vals)
+plt.text(0.4, 1.0, 'I', horizontalalignment='right', verticalalignment='top')
+plt.text(0.6, 1.0, 'II', horizontalalignment='left', verticalalignment='top')
+plt.xlabel(r"$\kappa/(\omega_2-\omega_1)$")
 plt.ylabel(r"$\left<n_2\right>$")
 plt.savefig(output_plot, transparent=True, format='pdf', bbox_inches='tight')

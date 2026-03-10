@@ -101,6 +101,7 @@ print(r'Max <n2>: %.3f at %.3f MHz and %.3f MHz' % (z.flat[max_i], max_x, max_y)
 mesh = plt.pcolormesh(x, y, z)
 plt.colorbar(mesh).set_label(r'$\left<n_2\right>$')
 mesh.set_edgecolor('face') # https://stackoverflow.com/a/27096694
+plt.contour(x, y, z, levels=[0.80, 0.95, 0.99], cmap='copper', linewidths=1)
 #plt.plot(max_x, max_y, 'ro')
 plt.xlabel(r'$\sigma$ (ms)')
 plt.ylabel(r'$(\omega_2-\omega_1)/2\pi$ (MHz)')

@@ -105,7 +105,7 @@ fig, ax = plt.subplots()
 mesh = ax.pcolormesh(x, y, z)
 plt.colorbar(mesh).set_label(r'$\left<n_2\right>$')
 mesh.set_edgecolor('face') # https://stackoverflow.com/a/27096694
-ax.plot(max_x, max_y, 'ro')
+#ax.plot(max_x, max_y, 'ro')
 
 x1, x2 = ax.get_xlim()
 y1, y2 = ax.get_ylim()
