@@ -4,6 +4,8 @@ from numpy import linspace, loadtxt, array
 import matplotlib.pyplot as plt
 from qutip import mesolve, fidelity, hinton, plot_wigner
 
+import qutip
+
 import dim
 import param
 import t_dep
@@ -48,6 +50,10 @@ for i1, alpha0 in enumerate(linspace(500, 3500, 51)):
 
 	param.alpha0 = alpha0
 	H, c_ops, e_ops, psi0, psi1 = setup()
+	e_ops = [
+		qutip.tensor(qutip.qeye(dim.nc), qutip.basis(dim.n1,1) * qutip.basis(dim.n1,1).dag(), qutip.qeye(dim.n2)),
+		qutip.tensor(qutip.qeye(dim.nc), qutip.qeye(dim.n1), qutip.basis(dim.n2,1) * qutip.basis(dim.n2,1).dag()),
+	]
 
 	options={
 		#'nsteps': 2000000000,
@@ -63,8 +69,8 @@ for i1, alpha0 in enumerate(linspace(500, 3500, 51)):
 	
 	if i1%1 == 0:
 		plt.figure()
-		plt.plot(t*1000, output.expect[1], label='Mechanical 1 num expec')
-		plt.plot(t*1000, output.expect[2], label='Mechanical 2 num expec')
+		plt.plot(t*1000, output.expect[0], label='Mechanical 1 prob')
+		plt.plot(t*1000, output.expect[1], label='Mechanical 2 prob')
 		plt.plot(t*1000, alpha_n1, label="Pulse 1")
 		plt.plot(t*1000, alpha_n2, label="Pulse 2")
 		plt.ylim(0, 2)
@@ -75,15 +81,17 @@ for i1, alpha0 in enumerate(linspace(500, 3500, 51)):
 		plt.close()
 		
 	alpha0_vals.append(alpha0)
-	n1_val = output.expect[1][-1]
-	n2_val = output.expect[2][-1]
+	n1_val = output.expect[0][-1]
+	n2_val = output.expect[1][-1]
 	n1_vals.append(n1_val)
 	n2_vals.append(n2_val)
 	with open(output_file, 'a') as f:
 		f.write(f'{i1},{alpha0},{n1_val},{n2_val}\n')
 
+alpha0_vals = array(alpha0_vals)
 plt.figure()
-plt.plot(alpha0_vals, n2_vals)
-plt.xlabel(r"$\alpha_0$")
-plt.ylabel(r"$\left<n_2\right>$")
+plt.plot(alpha0_vals*param.g1*2, n2_vals)
+plt.xlabel(r"$\Omega_0$")
+plt.ylabel(r"Probability")
+plt.axhline(1, linestyle="--", color="gray")
 plt.savefig(output_plot, transparent=True, format='pdf', bbox_inches='tight')
